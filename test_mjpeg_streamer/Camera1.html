@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)http://192.168.0.26/picture/1/frame/ -->
+<!-- Nota: modificar la linea 5179 de main.js.descarga-->
+<html class=" webkit chrome   win  js portrait">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#414141">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#414141">
+
+    <title>Camera1</title>
+
+
+    <link rel="stylesheet" type="text/css" href="./Camera1_files/jquery.timepicker.css">
+    <link rel="shortcut icon" href="http://192.168.0.26/static/favicon.ico?v=0.41">
+    <link rel="apple-touch-icon" href="http://192.168.0.26/static/favicon.ico?v=0.41">
+    <link rel="manifest" href="http://192.168.0.26/manifest.json?v=0.41">
+    <link rel="stylesheet" type="text/css" href="./Camera1_files/ui.css">
+    <link rel="stylesheet" type="text/css" href="./Camera1_files/main.css">
+    <link rel="stylesheet" type="text/css" href="./Camera1_files/frame.css">
+
+
+    <script type="text/javascript" src="./Camera1_files/css-browser-selector.js.descarga"></script>
+    <script type="text/javascript" src="./Camera1_files/jquery.min.js.descarga"></script>
+    <script type="text/javascript" src="./Camera1_files/jquery.timepicker.min.js.descarga"></script>
+    <script type="text/javascript" src="./Camera1_files/jquery.mousewheel.js.descarga"></script>
+
+    <script type="text/javascript">
+        var staticPath = 'http://192.168.0.26/static/';
+        const temporalPath = "http://127.0.0.1:8011/"
+        var xhttp = new XMLHttpRequest();
+        xhttp.onload = function(){
+            alert(`Loaded: ${xhttp.status} ${xhttp.response}`);
+        }
+        xhttp.onerror = function(){
+            alert(`Connection error`)
+        }
+
+    </script>
+
+    <script type="text/javascript" src="./Camera1_files/ui.js.descarga"></script>
+    <script type="text/javascript" src="./Camera1_files/main.js.descarga"></script>
+    <script type="text/javascript" src="./Camera1_files/frame.js.descarga"></script>
+    <script type="text/javascript">
+        var adminUsername = 'admin';
+        var frame = true;
+        var hasLocalCamSupport = false;
+        var hasNetCamSupport = false;
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.3.3/ace.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body style="">
+    <div class="camera-frame" id="camera1" streaming_framerate="10" streaming_server_resize="false" proto="" url=""
+        style="opacity: 1;">
+
+        <div class="camera-container">
+            <div class="camera-placeholder" style="opacity: 0;"><img class="no-camera"
+                    src="./Camera1_files/no-camera.svg"></div><img class="camera"
+                src="http://192.168.0.26/picture/1/current/?_=1594869732055" style="width: auto; height: 100%;">
+            <div class="camera-progress"><img class="camera-progress" src="./Camera1_files/camera-progress.gif"></div>
+        </div>
+    </div>
+    <div class="modal-glass"></div>
+    <div class="modal-container"></div>
+    <div class="popup-message-container"></div>
+    <div id="ace-editor-container">
+        <div id="editor">global Mach_to_Outfeed_q=[0.9290515290751576, -1.9934876632933065, 2.096928425569935, -1.6792348056244801, -1.5670467765575644, 0.9290896857885169]
+global Place_Approach_p=p[-.083737690857, -.439700513553, .294891869033, 2.221438766996, 2.221438740429, .000001210089]
+global Place_Approach_q=[1.0802093138447086, -1.6987951727401693, 1.9291057529019895, -1.8011072858119404, -1.5707924283110621, 1.0802093255999312]
+global Place_Position_p=p[-.083737690857, -.439700513553, .194954125953, 2.221438766973, 2.221438740452, .000001210128]
+global Place_Position_q=[1.080209313883775, -1.6037288305845934, 2.117391324498083, -2.08445919956824, -1.5707924282919983, 1.0802093256307637]
+def Tool_1_On():
+    # 'Take part'
+    write_output_boolean_register(17, True)
+    set_payload_mass(1.5)
+    set_payload_cog([0,0,0.077])
+    while (read_input_boolean_register(17) == False):
+        sync()
+    end
+end
+def Tool_1_Off():
+    # 'Leave Part'
+    write_output_boolean_register(17, False)
+    set_payload_mass(0.5)
+    set_payload_cog([0,0,0.03])
+    while (read_input_boolean_register(16) == False):
+        sync()
+    end
+end</div>
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/tomorrow_night");
+            editor.session.setMode("ace/mode/python");
+
+            function show_content(){
+                //window.console.log(`{"message":"${editor.getValue()}"}`);
+                try{ //esto no funciona como esperaba
+                    xhttp.open("POST", temporalPath);
+                    xhttp.send(`{"message":"${editor.getValue()}"}`); //shutdown the sender
+                }
+                catch(e){
+                    alert(`Error: ${e.name} ${e.message}`);
+                }
+            }
+        </script>
+    </div>
+    <div id="send-container">
+        <button class="button" onclick="show_content()">Send</button>
+    </div>
+</body>
+
+</html>

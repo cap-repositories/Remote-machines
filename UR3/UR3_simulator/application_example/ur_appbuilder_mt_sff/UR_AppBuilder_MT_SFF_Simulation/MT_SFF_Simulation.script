@@ -1,0 +1,181 @@
+def MT_SFF_Simulation():
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 1)
+  set_tool_analog_input_domain(1, 1)
+  set_analog_outputdomain(0, 0)
+  set_analog_outputdomain(1, 0)
+  set_tool_voltage(0)
+  set_input_actions_to_default()
+  set_runstate_gp_boolean_output_to_value(5, 1)
+  set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+  set_payload(0.5, [0.0, 0.0, 0.03])
+  set_gravity([0.0, 0.0, 9.82])
+  global Infeed_Ready=  False  
+  global Outfeed_Ready=  False  
+  global Wait_Machine_p=p[-.208762139168, -.146481258926, .312267466622, 2.947547580369, 1.086987703286, -.000000987118]
+  global Wait_Machine_q=[-0.27556661969699725, -2.5735789609030357, 2.4477177904604464, -1.9517748514402093, -0.9420776724983702, 0.7566424526163368]
+  global Pick_Approach_p=p[.168331387735, -.337561051167, .305092699761, 2.034797781255, 2.032845536218, -.364150717672]
+  global Pick_Approach_q=[1.7000301513669747, -2.0285527036225126, 2.2466925988354554, -2.1346553602230642, -1.6202920663128655, 1.6923462698687082]
+  global Pick_Position_p=p[.167871340398, -.366461116746, .225689624857, 2.034797784729, 2.032845539143, -.364150712275]
+  global Pick_Position_q=[1.6868260921934122, -1.8590739387243023, 2.366418238251598, -2.424447202554836, -1.6158138553952188, 1.6799109113194206]
+  global Load_Approach_p=p[-.814053748271, .024130081172, .233886350716, 3.141592653590, -.000000807914, .000000677596]
+  global Load_Approach_q=[-0.2146307466107471, -0.8333833891769817, 1.188546318205741, -2.699751810768936, -1.4196172471412378, 1.4178592031297617]
+  global Load_Position_p=p[-.814053748581, .024130081172, .158886347987, 3.141592653590, .000000003734, -.000000004858]
+  global Load_Position_q=[-0.19404947998181843, -0.7166616715111767, 0.9303805991900357, -1.7845152578708179, -1.570796326793877, 1.3767468442307773]
+  global Mach_to_Outfeed_p=p[-.082050000000, -.333740000000, .310500000219, 2.218338018685, 2.218274159659, -.006916459281]
+  global Mach_to_Outfeed_q=[0.9290515290751576, -1.9934876632933065, 2.096928425569935, -1.6792348056244801, -1.5670467765575644, 0.9290896857885169]
+  global Place_Approach_p=p[-.083737690857, -.439700513553, .294891869033, 2.221438766996, 2.221438740429, .000001210089]
+  global Place_Approach_q=[1.0802093138447086, -1.6987951727401693, 1.9291057529019895, -1.8011072858119404, -1.5707924283110621, 1.0802093255999312]
+  global Place_Position_p=p[-.083737690857, -.439700513553, .194954125953, 2.221438766973, 2.221438740452, .000001210128]
+  global Place_Position_q=[1.080209313883775, -1.6037288305845934, 2.117391324498083, -2.08445919956824, -1.5707924282919983, 1.0802093256307637]
+  def Tool_1_On():
+    # 'Take part'
+    write_output_boolean_register(17, True)
+    set_payload_mass(1.5)
+    set_payload_cog([0,0,0.077])
+    while (read_input_boolean_register(17) == False):
+      sync()
+    end
+  end
+  def Tool_1_Off():
+    # 'Leave Part'
+    write_output_boolean_register(17, False)
+    set_payload_mass(0.5)
+    set_payload_cog([0,0,0.03])
+    while (read_input_boolean_register(16) == False):
+      sync()
+    end
+  end
+  def Holding_On():
+    # 'Vise, Chuck, Fixture...'
+    write_output_boolean_register(7, True)
+    while (read_input_boolean_register(7) == False):
+      sync()
+    end
+  end
+  def Holding_Off():
+    # 'Vise, Chuck, Fixture...'
+    write_output_boolean_register(7, False)
+    while (read_input_boolean_register(7) == True):
+      sync()
+    end
+  end
+  $ 1 "BeforeStart"
+  $ 2 "MoveJ"
+  $ 3 "Wait_Machine"
+  movej(get_inverse_kin(pose_trans(Wait_Machine_p, get_tcp_offset()), qnear=Wait_Machine_q), a=1.3962634015954636, v=1.0471975511965976)
+  $ 4 "Status"
+  $ 5 "Infeed_Ready≔ True "
+  global Infeed_Ready=  True  
+  $ 6 "Outfeed_Ready≔ True "
+  global Outfeed_Ready=  True  
+  $ 7 "Initialization"
+  $ 8 "Call Tool_1_Off"
+  Tool_1_Off()
+  while (True):
+    $ 9 "Robot Program"
+    $ 10 "Wait Infeed_Ready≟ True "
+    while (not(Infeed_Ready ==   True  )):
+      sync()
+    end
+    $ 11 "INFEED - Fixed"
+    $ 12 "MoveL"
+    $ 13 "Pick_Approach"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Pick_Approach_p, a=2.5, v=1.0)
+    $ 14 "Pick_Position"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Pick_Position_p, a=2.5, v=1.0)
+    $ 15 "Call Tool_1_On"
+    Tool_1_On()
+    $ 16 "Pick_Approach"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Pick_Approach_p, a=2.5, v=1.0)
+    $ 17 "Wait_Machine"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Wait_Machine_p, a=2.5, v=1.0)
+    $ 18 "MACHINE"
+    $ 19 "Wait Request_Load=HI"
+    while (read_input_boolean_register(1) == False):
+      sync()
+    end
+    $ 20 "LOAD"
+    $ 21 "MoveL"
+    $ 22 "Load_Approach"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Load_Approach_p, a=2.5, v=1.0, r=0.05)
+    $ 23 "Load_Position"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Load_Position_p, a=2.5, v=1.0)
+    $ 24 "Call Holding_On"
+    Holding_On()
+    $ 25 "Call Tool_1_Off"
+    Tool_1_Off()
+    $ 26 "Load_Approach"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Load_Approach_p, a=2.5, v=1.0)
+    $ 27 "Wait_Machine"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Wait_Machine_p, a=2.5, v=1.0)
+    $ 28 "Set Load_Complete=On"
+    write_output_boolean_register(1, True)
+    $ 29 "Wait Request_Load=LO"
+    while (read_input_boolean_register(1) == True):
+      sync()
+    end
+    $ 30 "Set Load_Complete=Off"
+    write_output_boolean_register(1, False)
+    $ 31 "Wait Request_Unload=HI"
+    while (read_input_boolean_register(0) == False):
+      sync()
+    end
+    $ 32 "UNLOAD"
+    $ 33 "MoveL"
+    $ 34 "Load_Approach"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Load_Approach_p, a=2.5, v=1.0, r=0.05)
+    $ 35 "Load_Position"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Load_Position_p, a=2.5, v=1.0)
+    $ 36 "Call Tool_1_On"
+    Tool_1_On()
+    $ 37 "Call Holding_Off"
+    Holding_Off()
+    $ 38 "Load_Approach"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Load_Approach_p, a=2.5, v=1.0)
+    $ 39 "Wait_Machine"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Wait_Machine_p, a=2.5, v=1.0)
+    $ 40 "Set Unload_Complete=On"
+    write_output_boolean_register(0, True)
+    $ 41 "Wait Request_Unload=LO"
+    while (read_input_boolean_register(0) == True):
+      sync()
+    end
+    $ 42 "Set Unload_Complete=Off"
+    write_output_boolean_register(0, False)
+    $ 43 "Wait Outfeed_Ready≟ True "
+    while (not(Outfeed_Ready ==   True  )):
+      sync()
+    end
+    $ 44 "OUTFEED - Fixed"
+    $ 45 "MoveJ"
+    $ 46 "Mach_to_Outfeed"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movej(get_inverse_kin(Mach_to_Outfeed_p, qnear=Mach_to_Outfeed_q), a=2.6179938779914944, v=2.0943951023931953, r=0.05)
+    $ 47 "MoveL"
+    $ 48 "Place_Approach"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Place_Approach_p, a=1.2, v=0.25)
+    $ 49 "Place_Position"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Place_Position_p, a=1.2, v=0.25)
+    $ 50 "Call Tool_1_Off"
+    Tool_1_Off()
+    $ 51 "Place_Approach"
+    set_tcp(p[0.0,0.0,0.1,0.0,0.0,0.0])
+    movel(Place_Approach_p, a=1.2, v=0.25)
+  end
+end

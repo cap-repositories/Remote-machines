@@ -1,0 +1,72 @@
+ Program
+   BeforeStart
+     MoveJ
+       Wait_Machine
+     Status
+       Infeed_Ready≔ True 
+       Outfeed_Ready≔ True 
+     Initialization
+       Call Tool_1_Off
+   Robot Program
+     Wait Infeed_Ready≟ True 
+     INFEED - Fixed
+       MoveL
+         Pick_Approach
+         Pick_Position
+         Call Tool_1_On
+         Pick_Approach
+         Wait_Machine
+     MACHINE
+       Wait Request_Load=HI
+       LOAD
+         MoveL
+           Load_Approach
+           Load_Position
+           Call Holding_On
+           Call Tool_1_Off
+           Load_Approach
+           Wait_Machine
+         Set Load_Complete=On
+         Wait Request_Load=LO
+         Set Load_Complete=Off
+       Wait Request_Unload=HI
+       UNLOAD
+         MoveL
+           Load_Approach
+           Load_Position
+           Call Tool_1_On
+           Call Holding_Off
+           Load_Approach
+           Wait_Machine
+         Set Unload_Complete=On
+         Wait Request_Unload=LO
+         Set Unload_Complete=Off
+     Wait Outfeed_Ready≟ True 
+     OUTFEED - Fixed
+       MoveJ
+         Mach_to_Outfeed
+       MoveL
+         Place_Approach
+         Place_Position
+         Call Tool_1_Off
+         Place_Approach
+   Tool_1_On
+     'Take part'
+     Set Act_Gripper_1=On
+     set_payload_cog([0,0,0.077])
+     'Wait: 0.5'
+     Wait Gripper1_Closed=HI
+   Tool_1_Off
+     'Leave Part'
+     Set Act_Gripper_1=Off
+     set_payload_cog([0,0,0.03])
+     'Wait: 0.5'
+     Wait Gripper_1_Open=HI
+   Holding_On
+     'Vise, Chuck, Fixture...'
+     Set Request_Clamp=On
+     Wait Part_Clamped=HI
+   Holding_Off
+     'Vise, Chuck, Fixture...'
+     Set Request_Clamp=Off
+     Wait Part_Clamped=LO
